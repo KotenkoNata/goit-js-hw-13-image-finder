@@ -6,7 +6,7 @@ import * as basicLightbox from "basiclightbox";
 import "basiclightbox/src/styles/main.scss";
 import { hidePreloader, showPreloader } from "./js/preloader";
 
-const { form, gallery, loadMoreBtn } = galleryRefs;
+const { form, gallery } = galleryRefs;
 
 function getLastGalleryImage() {
   return document.querySelector(`.photo-item:last-child`);
@@ -77,32 +77,6 @@ form.addEventListener("submit", (e) => {
     hidePreloader();
   });
 });
-
-// loadMoreBtn.addEventListener("click", (e) => {
-//   e.preventDefault();
-//   loadMore();
-// });
-
-// function loadMore() {
-//   fetchObject.getFetch().then((hits) => {
-//     const items = renderTemplate(hits);
-//     appendItems(items);
-//     scrollToFirstImgOnPage();
-//   });
-// }
-
-// function scrollToFirstImgOnPage() {
-//   const lastGalleryItem = document.querySelector(`.photo-item:last-child`);
-//   io.observe(lastGalleryItem);
-
-//   setTimeout(function () {
-//     let selector = `[page='${fetchObject.page}'].photo-item`;
-//     let el = document.querySelectorAll(selector)[0];
-//     el.scrollIntoView({
-//       behavior: "smooth",
-//     });
-//   }, 50);
-// }
 
 const handleImageClick = function (event) {
   event.preventDefault();

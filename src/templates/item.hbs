@@ -1,5 +1,5 @@
-{{#each this}}
-<li class="photo-item" page="{{page}}">
+{{#each this.hits}}
+<li class="photo-item" page="{{../page}}">
     <div class="photo-card">
         <img class="picture" src={{webformatURL}} data-source={{largeImageURL}} alt={{tags}} />
 

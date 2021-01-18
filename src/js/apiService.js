@@ -1,10 +1,10 @@
-import { alert } from "./notify";
+import { errorMessage, successMessage } from "./notify";
 
 export default {
   authKey: "19850325-9735dd30f950df293b2a187bf",
   prevQuery: null,
   page: 1,
-  per_page: 12,
+  perPage: 12,
   baseUrl: `https://pixabay.com/api/`,
 
   getFetch(query) {
@@ -15,7 +15,7 @@ export default {
       this.prevQuery = query;
     }
 
-    let url = `${this.baseUrl}?image_type=photo&orientation=horizontal&q=${this.prevQuery}&page=${this.page}&per_page=${this.per_page}&key=${this.authKey}`;
+    const url = `${this.baseUrl}?image_type=photo&orientation=horizontal&q=${this.prevQuery}&page=${this.page}&per_page=${this.perPage}&key=${this.authKey}`;
 
     let options = {
       method: "GET",
@@ -30,11 +30,18 @@ export default {
         return response.json();
       })
       .then((data) => {
-        alert(`Loaded ${this.per_page} images from ${data.total}`);
+        const { page, perPage } = this;
+        const { total, hits } = data;
 
-        return data.hits.map((hit) => {
-          return { page: this.page, ...hit };
-        });
+        if (data.total === 0) {
+          errorMessage(`No result was found for query [${this.prevQuery}]`);
+        } else {
+          successMessage(`Loaded ${this.perPage} images from ${total}`);
+        }
+
+        const hasMore = total - perPage * page > 0;
+
+        return { hasMore, page, ...data };
       });
   },
 };

@@ -12,15 +12,22 @@ function getLastGalleryImage() {
   return document.querySelector(`.photo-item:last-child`);
 }
 
-function loadNewImagesPage() {
-  showPreloader();
-  fetchObject.getFetch().then((hits) => {
-    const items = renderTemplate(hits);
+function renderData(data) {
+  const { hits, hasMore } = data;
+  if (hits.length > 0) {
+    const items = renderTemplate(data);
     appendItems(items);
     scrollToFirstImgOnPage();
-    bindIntersectionObserver();
-    hidePreloader();
-  });
+    if (hasMore) {
+      bindIntersectionObserver();
+    }
+  }
+  hidePreloader();
+}
+
+function loadNewImagesPage() {
+  showPreloader();
+  fetchObject.getFetch().then(renderData);
 }
 
 function createIntersectionObserver() {
@@ -43,14 +50,16 @@ function createIntersectionObserver() {
 
 function bindIntersectionObserver() {
   let lastGalleryImage = getLastGalleryImage();
-  let io = createIntersectionObserver();
-  io.observe(lastGalleryImage);
+  if (lastGalleryImage) {
+    let io = createIntersectionObserver();
+    io.observe(lastGalleryImage);
+  }
 }
 
 function scrollToFirstImgOnPage() {
+  let selector = `[page='${fetchObject.page}'].photo-item`;
+  let el = document.querySelectorAll(selector)[0];
   setTimeout(function () {
-    let selector = `[page='${fetchObject.page}'].photo-item`;
-    let el = document.querySelectorAll(selector)[0];
     el.scrollIntoView({
       behavior: "smooth",
     });
@@ -69,13 +78,7 @@ form.addEventListener("submit", (e) => {
   const query = e.target.elements.query.value;
 
   showPreloader();
-  fetchObject.getFetch(query).then((hits) => {
-    const items = renderTemplate(hits);
-    appendItems(items);
-    scrollToFirstImgOnPage();
-    bindIntersectionObserver();
-    hidePreloader();
-  });
+  fetchObject.getFetch(query).then(renderData);
 });
 
 const handleImageClick = function (event) {

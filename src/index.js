@@ -8,7 +8,7 @@ import { hidePreloader, showPreloader } from "./js/preloader";
 
 const { form, gallery } = galleryRefs;
 
-function getLastGalleryImage() {
+async function getLastGalleryImage() {
   return document.querySelector(`.photo-item:last-child`);
 }
 
@@ -27,10 +27,15 @@ function renderData(data) {
 
 function loadNewImagesPage() {
   showPreloader();
-  fetchObject.getFetch().then(renderData);
+  let res = async () => {
+    let data = await fetchObject.getFetch();
+    renderData(data);
+  };
+
+  res();
 }
 
-function createIntersectionObserver() {
+async function createIntersectionObserver() {
   const options = {
     //rootMargin: "100px",
     threshold: [0.75],
@@ -49,11 +54,13 @@ function createIntersectionObserver() {
 }
 
 function bindIntersectionObserver() {
-  let lastGalleryImage = getLastGalleryImage();
-  if (lastGalleryImage) {
-    let io = createIntersectionObserver();
-    io.observe(lastGalleryImage);
-  }
+  getLastGalleryImage().then((lastGalleryImage) => {
+    if (lastGalleryImage) {
+      createIntersectionObserver().then((io) => {
+        io.observe(lastGalleryImage);
+      });
+    }
+  });
 }
 
 function scrollToFirstImgOnPage() {
